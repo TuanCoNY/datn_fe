@@ -194,7 +194,8 @@ const OrderAdmin = () => {
         return {
             ...order, key: order._id, userName: order?.shippingAddress?.fullName, phone: order?.shippingAddress?.phone,
             address: order?.shippingAddress?.address, paymentMethod: orderContant.payment[order?.paymentMethod],
-            isPaid: order?.isPaid ? 'TRUE' : 'FALSE', isDelivered: order?.isDelivered ? 'TRUE' : 'FALSE', totalPrice: convertPrice(order?.totalPrice)
+            isPaid: order?.isPaid ? 'TRUE' : 'FALSE', isDelivered: order?.isDelivered ? 'TRUE' : 'FALSE', totalPrice: convertPrice(order?.totalPrice),
+            itemsPrice: convertPrice(order?.itemsPrice)
         }
     })
 

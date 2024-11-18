@@ -1,4 +1,4 @@
-import { Badge, Col, Popover } from 'antd';
+import { Badge, Col, Popover, message, notification } from 'antd';
 import React, { useEffect } from 'react';
 import {
   WrapperContentPopup,
@@ -35,11 +35,23 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     navigate('/sign-in')
   }
   const handleLogout = async () => {
-    setLoading(true)
-    await UserService.logoutUser()
-    dispatch(resetUser())
-    setLoading(false)
-  }
+    setLoading(true);
+    await UserService.logoutUser();  // Đăng xuất người dùng
+    dispatch(resetUser());           // Reset state người dùng
+    setLoading(false);
+    message.success({
+      content: 'Đã đăng xuất thành công',
+      style: {
+        marginLeft: 0,     // Điều chỉnh để thông báo hiện từ trái sang phải
+        position: 'fixed',
+        top: 50,
+        left: '10%',  // Bạn có thể thay đổi phần trăm này để điều chỉnh vị trí xuất hiện từ trái qua
+        transform: 'translateX(0%)', // Vị trí mặc định (không cần di chuyển)
+        transition: 'transform 0.5s ease',  // Hiệu ứng mượt mà
+      },
+    });
+    navigate('/'); // Điều hướng về trang chủ sau khi đăng xuất
+  };
   useEffect(() => {
     setLoading(true)
     setUserName(user?.name)
@@ -49,31 +61,43 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   }, [user?.name, user?.avatar])
   const content = (
     <div>
-      <WrapperContentPopup onClick={() => handleClickNavigate('profile')}>Thông tin người dùng</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => handleClickNavigate('profile')}>
+        Thông tin người dùng
+      </WrapperContentPopup>
       {user?.isAdmin && (
-        <WrapperContentPopup onClick={() => handleClickNavigate('admin')}>Quản lý hệ thống</WrapperContentPopup>
+        <WrapperContentPopup onClick={() => handleClickNavigate('admin')}>
+          Quản lý hệ thống
+        </WrapperContentPopup>
       )}
-      <WrapperContentPopup onClick={() => handleClickNavigate('my-order')}>Đơn hàng của tôi</WrapperContentPopup>
-      <WrapperContentPopup onClick={() => handleClickNavigate}>Đăng xuất</WrapperContentPopup>
+      <WrapperContentPopup onClick={() => handleClickNavigate('my-order')}>
+        Đơn hàng của tôi
+      </WrapperContentPopup>
+
+      <WrapperContentPopup onClick={() => handleClickNavigate('logout')}>
+        Đăng xuất
+      </WrapperContentPopup>
     </div>
+
   );
   const handleClickNavigate = (type) => {
     if (type === 'profile') {
-      navigate('/profile-user')
+      navigate('/profile-user');
     } else if (type === 'admin') {
-      navigate('/system/admin')
+      navigate('/system/admin');
     } else if (type === 'my-order') {
       navigate('/my-order', {
         state: {
           id: user?.id,
-          token: user?.access_token
+          token: user?.access_token,
         }
-      })
-    } else {
-      handleLogout()
+      });
+    } else if (type === 'logout') {
+      handleLogout();
     }
-    setIsOpenPopup(false)
-  }
+    setIsOpenPopup(false);
+  };
+
+
   const onSearch = (e) => {
     setSearch(e.target.value)
     dispatch(searchProduct(e.target.value));
