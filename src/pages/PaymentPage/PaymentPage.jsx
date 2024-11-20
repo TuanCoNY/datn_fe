@@ -27,6 +27,7 @@ const PaymentPage = () => {
     const user = useSelector((state) => state.user)
 
     const [delivery, setDelivery] = useState('fast')
+
     const [payment, setPayment] = useState('later_money')
     const [sdkReady, setSdkReady] = useState(false)
 
@@ -255,7 +256,7 @@ const PaymentPage = () => {
                                     <Label> Chọn phương thức giao hàng</Label>
                                     <WrapperRadio onChange={handleDelivery} value={delivery}>
                                         <Radio value="fast"> <span style={{ color: '#ea8500', fontWeight: 'bold' }}>FAST</span>Giao hàng tiết kiệm</Radio>
-                                        <Radio value="gojeck"> <span style={{ color: '#ea8500', fontWeight: 'bold' }}>GO_JEK</span>Giao hàng tiết kiệm</Radio>
+                                        <Radio value="gojek"> <span style={{ color: '#ea8500', fontWeight: 'bold' }}>GO_JEK</span>Giao hàng tiết kiệm</Radio>
                                     </WrapperRadio>
                                 </div>
                             </WrapperInfo>

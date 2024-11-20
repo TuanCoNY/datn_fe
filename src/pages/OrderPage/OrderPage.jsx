@@ -98,23 +98,6 @@ const OrderPage = () => {
     setIsOpenModalUpdateInfor(true)
   }
 
-  // const priceMemo = useMemo(() => {
-  //   const result = order?.orderItemSelected?.reduce((total, cur) => {
-  //     return total + ((cur.price * cur.amount))
-  //   }, 0)
-  //   return result
-  // }, [order])
-
-  // const priceDiscountMemo = useMemo(() => {
-  //   const result = order?.orderItemSelected?.reduce((total, cur) => {
-  //     const totalDiscount = cur.discount ? cur.discount : 0
-  //     return total + (priceMemo * (totalDiscount * cur.amount) / 100)
-  //   }, 0);
-  //   if (Number(result)) {
-  //     return result
-  //   }
-  //   return 0;
-  // }, [order]);
   const priceMemo = useMemo(() => {
     // Tính tổng giá trị sản phẩm
     return order?.orderItemSelected?.reduce((total, cur) => {
@@ -155,7 +138,10 @@ const OrderPage = () => {
   const handleAddCard = () => {
     if (!order?.orderItemSelected?.length) {
       message.error('Vui lòng chọn sản phẩm')
-    } else if (!user?.phone || !user.address || !user.name || !user.city) {
+    } else if (!user?.id) {
+      navigate('/sign-in',);
+    }
+    else if (!user?.phone || !user.address || !user.name || !user.city) {
       setIsOpenModalUpdateInfor(true)
     } else {
       navigate('/payment')
@@ -187,18 +173,55 @@ const OrderPage = () => {
     form.resetFields()
     setIsOpenModalUpdateInfor(false)
   }
+  const handleGetDetailsUser = async (id, token) => {
+    try {
+      const res = await UserService.getDetailsUser(id, token);
+      // Dispatch thông tin người dùng mới vào Redux
+      dispatch(updateUser({
+        ...res?.data,
+        access_token: token
+      }));
+    } catch (error) {
+      console.error('Có lỗi khi lấy thông tin người dùng:', error);
+      message.error('Không thể lấy thông tin người dùng!');
+    }
+  };
 
   const handleUpdateInforUser = () => {
-    const { name, address, phone, city } = stateUserDetails
-    if (name && address && phone && city) {
-      mutationUpdate.mutate({ id: user?.id, token: user?.access_token, ...stateUserDetails }, {
-        onSuccess: () => {
-          dispatch(updateUser({ name, address, phone, city }))
-          setIsOpenModalUpdateInfor(false)
-        }
-      })
+    const { name, address, phone, city } = stateUserDetails;
+
+    // Kiểm tra tất cả các trường thông tin có hợp lệ hay không
+    if (!name || !address || !phone || !city) {
+      message.error('Vui lòng điền đầy đủ thông tin!');
+      return;  // Dừng hàm nếu thiếu thông tin
     }
-  }
+
+    // Gửi yêu cầu cập nhật thông tin người dùng
+    mutationUpdate.mutate(
+      { id: user?.id, token: user?.access_token, ...stateUserDetails },
+      {
+        onSuccess: () => {
+          // Sau khi cập nhật thành công, gọi lại API lấy thông tin người dùng mới
+          handleGetDetailsUser(user?.id, user?.access_token);
+
+          // Cập nhật thông tin người dùng trong Redux
+          dispatch(updateUser({ name, address, phone, city }));
+
+          // Đóng modal sau khi cập nhật thành công
+          setIsOpenModalUpdateInfor(false);
+
+          message.success('Cập nhật thông tin thành công!');
+        },
+        onError: () => {
+          message.error('Chưa đăng nhập hoặc Có lỗi xảy ra khi cập nhật thông tin!');
+        },
+      }
+    );
+  };
+
+  // Hàm gọi API để lấy lại thông tin người dùng
+
+
 
   const handleOnchangeDetails = (e) => {
     setStateUserDetails({
@@ -328,13 +351,19 @@ const OrderPage = () => {
           </WrapperRight>
         </div>
       </div>
-      <ModalComponent forceRender title="Cập nhật thông tin giao hàng" open={isOpenModalUpdateInfor} onCancel={handleCancelUpdate} onOk={handleUpdateInforUser}>
+      <ModalComponent
+        forceRender
+        title="Cập nhật thông tin giao hàng"
+        open={isOpenModalUpdateInfor}
+        onCancel={handleCancelUpdate}
+        onOk={handleUpdateInforUser}
+      >
         <Loading isPending={isPending}>
           <Form
             name="basic"
             labelCol={{ span: 4 }}
             wrapperCol={{ span: 20 }}
-            // onFinish={onUpdateUser}
+            //onFinish={onUpdateUser} // Đảm bảo có hàm onFinish xử lý cập nhật
             autoComplete="on"
             form={form}
           >
@@ -343,32 +372,49 @@ const OrderPage = () => {
               name="name"
               rules={[{ required: true, message: 'Please input your name!' }]}
             >
-              <InputComponent value={stateUserDetails['name']} onChange={handleOnchangeDetails} name="name" />
+              <InputComponent
+                value={stateUserDetails?.name || ''}
+                onChange={handleOnchangeDetails}
+                name="name"
+              />
             </Form.Item>
             <Form.Item
               label="City"
               name="city"
               rules={[{ required: true, message: 'Please input your city!' }]}
             >
-              <InputComponent value={stateUserDetails.city} onChange={handleOnchangeDetails} name="city" />
+              <InputComponent
+                value={stateUserDetails?.city || ''}
+                onChange={handleOnchangeDetails}
+                name="city"
+              />
             </Form.Item>
             <Form.Item
               label="Phone"
               name="phone"
               rules={[{ required: true, message: 'Please input your phone!' }]}
             >
-              <InputComponent value={stateUserDetails.phone} onChange={handleOnchangeDetails} name="phone" />
+              <InputComponent
+                value={stateUserDetails?.phone || ''}
+                onChange={handleOnchangeDetails}
+                name="phone"
+              />
             </Form.Item>
             <Form.Item
               label="Address"
               name="address"
               rules={[{ required: true, message: 'Please input your address!' }]}
             >
-              <InputComponent value={stateUserDetails.address} onChange={handleOnchangeDetails} name="address" />
+              <InputComponent
+                value={stateUserDetails?.address || ''}
+                onChange={handleOnchangeDetails}
+                name="address"
+              />
             </Form.Item>
           </Form>
         </Loading>
-      </ModalComponent >
+      </ModalComponent>
+
     </div>
   )
 }

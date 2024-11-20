@@ -40,8 +40,6 @@ const SignInPage = () => {
         navigate('/')
       }
       localStorage.setItem('access_token', JSON.stringify(data?.access_token))
-      localStorage.setItem('refresh_token', JSON.stringify(data?.refresh_token))
-      console.log('data', data.access_token)
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
         if (decoded?.id) {
@@ -57,7 +55,6 @@ const SignInPage = () => {
   }
   const handleNavigateSignUp = () => {
     navigate('/sign-up')
-
   }
   const handleOnchangeEmail = (value) => {
     setEmail(value)

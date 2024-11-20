@@ -150,11 +150,6 @@ const OrderAdmin = () => {
             dataIndex: 'isPaid',
             sorter: (a, b) => a.isPaid.length - b.isPaid.length,
             ...getColumnSearchProps('isPaid')
-        }, {
-            title: 'Shipped',
-            dataIndex: 'isDelivered',
-            sorter: (a, b) => a.isDelivered.length - b.isDelivered.length,
-            ...getColumnSearchProps('isDelivered')
         },
         {
             title: 'Method',
@@ -168,26 +163,6 @@ const OrderAdmin = () => {
             sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
             ...getColumnSearchProps('totalPrice')
         },
-        // {
-        //     title: 'Admin',
-        //     dataIndex: 'isAdmin',
-        //     filters: [
-        //         {
-        //             text: 'true',
-        //             value: true,
-        //         },
-        //         {
-        //             text: 'False',
-        //             value: false,
-        //         },
-        //     ],
-        // },
-        // {
-        //     title: 'Phone',
-        //     dataIndex: 'phone',
-        //     sorter: (a, b) => a.phone - b.phone,
-        //     ...getColumnSearchProps('phone')
-        // },
     ];
     const dataTable = orders?.data?.length && orders?.data?.map((order) => {
         console.log('user', user)

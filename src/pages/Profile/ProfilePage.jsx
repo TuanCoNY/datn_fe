@@ -18,7 +18,7 @@ import { getBase64 } from '../../utils'
 
 const ProfilePage = () => {
     const user = useSelector((state) => state.user)
-
+    const [userDetails, setUserDetails] = useState({});
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
@@ -82,9 +82,41 @@ const ProfilePage = () => {
 
     }
     const handleUpdate = () => {
-        mutation.mutate({ id: user?.id, email, name, phone, address, avatar, access_token: user?.access_token })
+        mutation.mutate(
+            {
+                id: user?.id,
+                email,
+                name,
+                phone,
+                address,
+                avatar,
+                access_token: user?.access_token
+            },
+            {
+                onSuccess: (data) => {
+                    // Cập nhật state người dùng ngay khi mutation thành công
+                    dispatch(updateUser({
+                        name,
+                        email,
+                        phone,
+                        address,
+                        avatar,
+                        access_token: user?.access_token,
+                        _id: user?.id,
+                        isAdmin: user?.isAdmin,
+                        city: user?.city
+                    }));
 
+
+                    handleGetDetailsUser(user?.id, user?.access_token);
+                },
+                onError: () => {
+                    message.error("Có lỗi khi cập nhật thông tin!");
+                }
+            }
+        );
     }
+
     return (
         <div style={{ width: '1270px', margin: '0 auto', height: '500px' }}>
             <WrapperHeader> Thông tin người dùng</WrapperHeader>

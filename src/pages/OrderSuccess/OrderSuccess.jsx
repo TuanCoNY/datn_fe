@@ -10,6 +10,7 @@ import { WrapperItemOrderInfo } from './style';
 const OrderSuccess = () => {
     const location = useLocation();
     const { state } = location;
+    console.log(state?.delivery);
 
     return (
         <div style={{ background: '#f5f5fa', width: '100%', height: '100vh' }}>
@@ -22,7 +23,9 @@ const OrderSuccess = () => {
                                 <div>
                                     <Label>Phương thức giao hàng</Label>
                                     <WrapprerValue>
+
                                         <span style={{ color: '#ea8500', fontWeight: 'bold' }}>
+
                                             {orderContant.delivery[state?.delivery]}
                                         </span>
                                         Giao hàng tiết kiệm
