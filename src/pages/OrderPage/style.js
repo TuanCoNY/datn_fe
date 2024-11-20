@@ -112,23 +112,27 @@ export const WrapperRight = styled.div`
 
 // Wrapper thông tin đơn hàng
 export const WrapperInfo = styled.div`
-    padding: 20px;
-    border-bottom: 1px solid #f5f5f5;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 25px; /* Tăng khoảng cách giữa các phần tử bên trong để dễ nhìn hơn */
+    border-bottom: 1px solid #e0e0e0; /* Đường viền mỏng, màu xám nhạt */
+    background: #ffffff; /* Màu nền trắng tinh khiết */
+    border-radius: 10px; /* Bo góc tròn để tăng sự mềm mại */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Bóng mờ giúp tạo chiều sâu và thu hút sự chú ý */
 
     h3 {
-        font-size: 18px;
-        font-weight: 600;
-        color: #333;
+        font-size: 20px; /* Kích thước chữ lớn hơn để thu hút sự chú ý */
+        font-weight: 600; /* Làm chữ đậm để nổi bật */
+        color: #333; /* Màu chữ tối để tương phản tốt với nền */
+        margin-bottom: 10px; /* Khoảng cách giữa tiêu đề và nội dung bên dưới */
     }
 
     span {
-        font-size: 14px;
-        color: #666;
+        font-size: 15px; /* Kích thước chữ nhỏ gọn hơn */
+        color: #555; /* Màu xám nhẹ, dễ đọc */
+        display: block; /* Đặt các đoạn văn không nối tiếp */
+        margin-bottom: 5px; /* Khoảng cách giữa các đoạn văn */
     }
 `;
+
 
 // Wrapper cho tổng tiền
 export const WrapperTotal = styled.div`

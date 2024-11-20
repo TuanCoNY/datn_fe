@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
+import { Button } from "antd";
 
 export const WrapperTypeProduct = styled.div`
     display: flex;
@@ -103,3 +104,65 @@ export const WrapperProducts = styled.div`
         }
     }
 `;
+
+
+
+/* Wrapper cho các phần tử sắp xếp */
+export const WrapperSortOptions = styled.div`
+    display: flex;
+    gap: 12px;
+    align-items: center;
+`;
+
+/* Style cho dropdown sắp xếp */
+export const SelectSort = styled.select`
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: #0b74e5;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ khi hover */
+    }
+
+    option {
+        padding: 8px;
+    }
+`;
+
+/* Style cho nút Reset */
+export const ResetButton = styled(Button)`
+    padding: 10px 20px;
+    background-color: #f5f5f5;
+    color: #0d5cb6;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background-color: #0d5cb6;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+        background-color: #0a64c3;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    }
+`;
+
+/* Wrapper cho các nút */
+export const WrapperButtonGroup = styled.div`
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+`;
+
+

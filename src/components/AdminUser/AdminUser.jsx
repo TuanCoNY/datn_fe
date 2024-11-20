@@ -236,9 +236,9 @@ const AdminUser = () => {
         },
         {
             title: 'Address',
-            dataIndex: 'adress',
+            dataIndex: 'address',
             sorter: (a, b) => a.adress.length - b.adress.length,
-            ...getColumnSearchProps('adress')
+            ...getColumnSearchProps('address')
         },
         {
             title: 'Admin',

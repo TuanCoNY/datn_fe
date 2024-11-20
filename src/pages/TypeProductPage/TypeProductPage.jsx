@@ -9,6 +9,7 @@ import Loading from '../../components/LoadingComponent/Loading';
 import { useSelector } from 'react-redux';
 import { useDebounce } from '../../hooks/useDebounce';
 import Slider from 'react-slick';
+
 import {
     HomeOutlined
 } from '@ant-design/icons';

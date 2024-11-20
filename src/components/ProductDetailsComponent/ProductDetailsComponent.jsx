@@ -4,7 +4,7 @@ import imageProductSmall4 from '../../assets/images/small4.webp'
 // import imageProductSmall2 from '../../assets/images/small.webp'
 import imageProductSmall3 from '../../assets/images/small2.webp'
 import imageProductSmall from '../../assets/images/small3.webp'
-import { WrapperAddressProduct, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQualityProduct, WrapperStyleColImage, WrapperStyleImageSmall, WrapperStyleNameProduct, WrapperStyleTextSell } from './style'
+import { WrapperAddressProduct, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQualityProduct, WrapperStyleColImage, WrapperStyleImageCenter, WrapperStyleImageSmall, WrapperStyleNameProduct, WrapperStyleTextSell } from './style'
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import * as ProductService from '../../services/ProductService'
@@ -124,8 +124,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
         <Loading isPending={isPending}>
             <Row style={{ padding: '16px', background: '#fff', borderRadius: '4px' }}>
                 <Col span={10} style={{ borderRight: '1px solid #e5e5e5', paddingRight: '8px' }}>
-                    <Image src={productDetails?.image} alt="image product" preview={false} />
-                    <Row style={{ paddingTop: '10px', justifyContent: 'space-between' }}>
+                    <WrapperStyleImageCenter>
+                        <Image src={productDetails?.image} alt="Product Image" preview={false} />
+                    </WrapperStyleImageCenter>
+                    <Row style={{ paddingTop: '10px', justifyContent: 'space-between', borderRadius: '4px' }}>
                         <WrapperStyleColImage span={4}>
                             <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={true} />
                         </WrapperStyleColImage>
@@ -152,11 +154,6 @@ const ProductDetailsComponent = ({ idProduct }) => {
                     <WrapperPriceProduct>
                         <WrapperPriceTextProduct>{convertPrice((productDetails?.price) * numProduct)}</WrapperPriceTextProduct>
                     </WrapperPriceProduct>
-                    {/* <WrapperAddressProduct>
-                        <span>Giao đến </span>
-                        <span className='address'>{user?.address}</span> -
-                        <span className='change-address'> Đổi địa chỉ</span>
-                    </WrapperAddressProduct> */}
                     <LikeButtunComponet
                         dataHref={process.env.REACT_APP_IS_LOCAL
                             ? "https://developers.facebook.com/docs/plugins/"

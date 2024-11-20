@@ -9,7 +9,7 @@ export const WrapperStyleImageSmall = styled(Image)`
     object-fit: cover; /* Giữ tỷ lệ khung hình của ảnh mà không làm méo */
     border-radius: 8px; /* Bo tròn góc ảnh */
     transition: transform 0.3s ease-in-out;
-
+    border-radius: 4px;
     &:hover {
         transform: scale(1.05); /* Thêm hiệu ứng phóng to nhẹ khi hover */
     }
@@ -23,6 +23,7 @@ export const WrapperStyleColImage = styled(Col)`
     align-items: center;
     max-width: 120px; /* Giới hạn kích thước cột để ảnh không quá rộng */
     margin: 0 auto;
+   
 `
 
 
@@ -59,35 +60,50 @@ export const WrapperStyleTextSell = styled.span`
 
 // Tạo hiệu ứng và màu sắc cho giá sản phẩm
 export const WrapperPriceProduct = styled.div`
-    background: #f1f1f1;
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    margin-top: 20px;
+    background: #007BFF; /* Màu nền xanh */
+    color: #fff; /* Màu chữ trắng */
+    border-radius: 12px; /* Bo góc tự động với border-radius */
+    padding: 8px 16px; /* Padding tự động theo nội dung */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bóng nhẹ */
     transition: background 0.3s ease, box-shadow 0.3s ease;
 
+    display: inline-block; /* Giúp phần tử chỉ chiếm không gian vừa đủ */
+    text-align: center; /* Căn chữ vào giữa */
+
+    /* Điều chỉnh độ rộng tự động theo nội dung */
+    max-width: auto;
+    width: auto;
+
     &:hover {
-        background: #007BFF;
-        box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+        background: #0056b3; /* Màu nền khi hover */
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3); /* Tăng hiệu ứng shadow khi hover */
     }
-`
+`;
+
 
 // Thiết kế đẹp cho giá trị sản phẩm
 export const WrapperPriceTextProduct = styled.h1`
-    font-size: 34px;
-    font-weight: 600;
-    line-height: 40px;
-    margin-right: 8px;
+    font-size: 18px; /* Giảm kích thước font chữ */
+    font-weight: 500; /* Giảm độ đậm của font */
+    line-height: 24px; /* Điều chỉnh khoảng cách dòng */
+    margin-right: 5px; /* Giảm khoảng cách bên phải */
     color: #333;
-    padding: 10px;
-    margin-top: 10px;
-    transition: color 0.3s ease;
+    padding: 4px 6px; /* Giảm padding */
+    margin-top: 5px; /* Giảm khoảng cách phía trên */
+    transition: color 0.3s ease, background-color 0.3s ease;
 
+    max-width: 200px; /* Giới hạn chiều rộng để không quá dài */
+    width: 300px; /* Cho phép phần tử sử dụng toàn bộ chiều rộng nhưng không vượt quá max-width */
+    text-align: left; /* Căn lề sang trái */
+    
     &:hover {
-        color: #fff;
+        color: #fff; /* Đổi màu chữ khi hover */
+        background-color: #007BFF; /* Màu nền khi hover */
     }
-`
+`;
+
+
+
 
 // Cập nhật địa chỉ với kiểu dáng đẹp và dễ nhìn
 export const WrapperAddressProduct = styled.div`
@@ -159,3 +175,10 @@ export const WrapperInputNumber = styled(InputNumber)`
         }
     }
 `
+export const WrapperStyleImageCenter = styled.div`
+    display: flex;
+    justify-content: center; /* Canh giữa theo chiều ngang */
+    align-items: center; /* Canh giữa theo chiều dọc */
+    height: 40vh; /* Chiều cao toàn màn hình, có thể chỉnh */
+    border: 1px solid #blue; /* Tùy chọn: thêm đường viền để kiểm tra */
+`;

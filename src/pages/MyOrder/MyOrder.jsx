@@ -3,7 +3,7 @@ import React from 'react'
 import * as OrderService from '../../services/OrderService'
 import Loading from '../../components/LoadingComponent/Loading'
 import { convertPrice } from '../../utils'
-import { WrapperItemOrder, WrapperStatus, WrapperListOrder, WrapperContainer, WrapperHeaderItem, WrapperFooterItem } from './style'
+import { WrapperItemOrder, WrapperStatus, WrapperListOrder, WrapperContainer, WrapperHeaderItem, WrapperFooterItem, WrapperHeaderTitle } from './style'
 import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMutationHooks } from '../../hooks/useMutationHooks'
@@ -49,7 +49,7 @@ const MyOrderPage = () => {
   const { isPending: isPendingCancel, isSuccess: isSuccessCancel, isError: isErrorCancel, data: dataCancel } = mutation
   useEffect(() => {
     if (isSuccessCancel && dataCancel?.status === 'OK') {
-      message.success()
+      message.success('Hủy đơn hàng thành công')
     } else if (isErrorCancel) {
       message.error()
     }
@@ -59,8 +59,8 @@ const MyOrderPage = () => {
       return <WrapperHeaderItem key={order?._id}>
         <img src={order?.image}
           style={{
-            width: "70px",
-            height: "70px",
+            width: "120px",
+            height: "120px",
             objectFit: "cover",
             border: "1px solid rgb(238, 238, 238)",
             padding: "2px",
@@ -85,9 +85,10 @@ const MyOrderPage = () => {
     <Loading isPending={isPending || isPendingCancel}>
       <WrapperContainer>
         <div style={{ height: '100%', width: '1270px', margin: '0, auto' }}>
-          <h4>Đơn hàng của tôi</h4>
+          <WrapperHeaderTitle>Đơn hàng của tôi</WrapperHeaderTitle>
           <WrapperListOrder>
             {data?.map((order) => {
+              console.log(order)
 
               return (
                 <WrapperItemOrder key={order?._id}>
@@ -133,6 +134,7 @@ const MyOrderPage = () => {
                         texbutton={"Xem chi tiết"}
                         styletexbutton={{ color: "rgb(11, 116, 229)", fontSize: "14px" }}
                       />
+                      <span style={{ display: 'flex', justifyItems: 'center', alignItems: 'center' }}> Địa chỉ giao hàng : {order?.shippingAddress?.address} - {order?.shippingAddress?.city}</span>
                     </div>
                   </WrapperFooterItem>
 

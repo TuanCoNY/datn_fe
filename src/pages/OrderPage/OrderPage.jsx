@@ -308,8 +308,8 @@ const OrderPage = () => {
             <div style={{ width: '100%' }}>
               <WrapperInfo>
                 <div style={{ fontSize: '16px' }}>
-                  <span>Địa chỉ giao hàng: </span>
-                  <span style={{ color: 'red', fontWeight: 'bold' }}>{`${user?.address} ${user?.city}`}</span>
+                  <span>Địa chỉ giao hàng: Tên đường - Thành phố</span>
+                  <span style={{ color: 'red', fontWeight: 'bold' }}>{`${user?.address} - ${user?.city}`} </span>
                   <span onClick={handleChangeAddress} style={{ color: 'blue', cursor: 'pointer' }}>Thay đổi địa chỉ</span>
                 </div>
               </WrapperInfo>

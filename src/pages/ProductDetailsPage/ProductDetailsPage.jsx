@@ -1,6 +1,9 @@
 import React from 'react'
 import ProductDetailsComponent from '../../components/ProductDetailsComponent/ProductDetailsComponent'
 import { useNavigate, useParams } from 'react-router-dom'
+import {
+  HomeOutlined
+} from '@ant-design/icons';
 
 const ProductDetailsPage = () => {
   const navigate = useNavigate()
@@ -13,7 +16,8 @@ const ProductDetailsPage = () => {
             style={{ cursor: 'pointer', fontWeight: 'bold' }}
             onClick={() => { navigate('/'); }}
           >
-            Trang chủ
+            <HomeOutlined /> Trang chủ
+
           </span>
           <span style={{ fontWeight: 'normal' }}> - Chi tiết sản phẩm</span>
         </h5>

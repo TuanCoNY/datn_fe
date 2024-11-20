@@ -16,7 +16,7 @@ const OrderSuccess = () => {
         <div style={{ background: '#f5f5fa', width: '100%', height: '100vh' }}>
             <Loading isPending={false}>
                 <div style={{ height: '100%', width: '1270px', margin: '0 auto' }}>
-                    <h3 style={{ fontSize: '18px' }}>Đơn hàng đặt thành công</h3>
+                    <h3 style={{ fontSize: '18px' }}> Đơn hàng đặt thành công</h3>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
                         <WrapperContainer>
                             <WrapperInfo>
