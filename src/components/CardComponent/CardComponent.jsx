@@ -45,9 +45,31 @@ const CardComponent = (props) => {
                 <WrapperStyleTextSell> | Đã bán {selled || 1000}+</WrapperStyleTextSell>
             </WrapperReportText>
             <WrapperPriceText>
-                <span style={{ marginRight: '8px' }}>{convertPrice(price)}</span>
-                <WrapperDiscountText>- {discount || 5}%</WrapperDiscountText>
+                {/* Kiểm tra nếu có discount */}
+                {discount ? (
+                    <>
+                        {/* Giá cũ bị gạch bỏ */}
+                        <span style={{ marginRight: '8px', textDecoration: 'line-through' }}>
+                            {convertPrice(price)}
+                        </span>
+                        <WrapperDiscountText>- {discount}%</WrapperDiscountText>
+
+                        {/* Giá mới sau khi giảm */}
+                        <div style={{ marginRight: '8px' }}>
+                            {convertPrice(price - (price * discount / 100))}
+                        </div>
+
+                        {/* Hiển thị giảm giá */}
+
+                    </>
+                ) : (
+                    // Nếu không có discount, chỉ hiển thị giá gốc
+                    <span style={{ marginRight: '8px' }}>
+                        {convertPrice(price)}
+                    </span>
+                )}
             </WrapperPriceText>
+
         </WrapperCardStyle>
     );
 };

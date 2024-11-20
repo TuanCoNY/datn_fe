@@ -1,6 +1,9 @@
 import { Col, Image, Rate, Row } from 'antd'
 import React, { useMemo } from 'react'
-import imageProductSmall from '../../assets/images/imagesmall.webp'
+import imageProductSmall4 from '../../assets/images/small4.webp'
+// import imageProductSmall2 from '../../assets/images/small.webp'
+import imageProductSmall3 from '../../assets/images/small2.webp'
+import imageProductSmall from '../../assets/images/small3.webp'
 import { WrapperAddressProduct, WrapperInputNumber, WrapperPriceProduct, WrapperPriceTextProduct, WrapperQualityProduct, WrapperStyleColImage, WrapperStyleImageSmall, WrapperStyleNameProduct, WrapperStyleTextSell } from './style'
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
@@ -115,6 +118,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             }
         }
     };
+    console.log('productdetails', productDetails)
 
     return (
         <Loading isPending={isPending}>
@@ -123,19 +127,19 @@ const ProductDetailsComponent = ({ idProduct }) => {
                     <Image src={productDetails?.image} alt="image product" preview={false} />
                     <Row style={{ paddingTop: '10px', justifyContent: 'space-between' }}>
                         <WrapperStyleColImage span={4}>
-                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={false} />
+                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={true} />
                         </WrapperStyleColImage>
                         <WrapperStyleColImage span={4}>
-                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={false} />
+                            {/* <WrapperStyleImageSmall src={imageProductSmall2} alt="image product mall" preview={true} /> */}
                         </WrapperStyleColImage>
                         <WrapperStyleColImage span={4}>
-                            <WrapperStyleImageSmall src={imageProductSmall} alt="image pproduct mall" preview={false} />
+                            <WrapperStyleImageSmall src={imageProductSmall3} alt="image pproduct mall" preview={true} />
                         </WrapperStyleColImage>
                         <WrapperStyleColImage span={4}>
-                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={false} />
+                            <WrapperStyleImageSmall src={imageProductSmall4} alt="image product mall" preview={true} />
                         </WrapperStyleColImage>
                         <WrapperStyleColImage span={4}>
-                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={false} />
+                            <WrapperStyleImageSmall src={imageProductSmall} alt="image product mall" preview={true} />
                         </WrapperStyleColImage>
                     </Row>
                 </Col>
@@ -143,16 +147,16 @@ const ProductDetailsComponent = ({ idProduct }) => {
                     <WrapperStyleNameProduct> {productDetails?.name}</WrapperStyleNameProduct>
                     <div>
                         <Rate allowHalf defaultValue={productDetails?.rating} value={productDetails?.rating} />
-                        <WrapperStyleTextSell> | Đã Bán 1000+</WrapperStyleTextSell>
+                        <WrapperStyleTextSell> | Đã Bán {productDetails?.selled}+</WrapperStyleTextSell>
                     </div>
                     <WrapperPriceProduct>
-                        <WrapperPriceTextProduct>{convertPrice(productDetails?.price)}</WrapperPriceTextProduct>
+                        <WrapperPriceTextProduct>{convertPrice((productDetails?.price) * numProduct)}</WrapperPriceTextProduct>
                     </WrapperPriceProduct>
-                    <WrapperAddressProduct>
+                    {/* <WrapperAddressProduct>
                         <span>Giao đến </span>
                         <span className='address'>{user?.address}</span> -
                         <span className='change-address'> Đổi địa chỉ</span>
-                    </WrapperAddressProduct>
+                    </WrapperAddressProduct> */}
                     <LikeButtunComponet
                         dataHref={process.env.REACT_APP_IS_LOCAL
                             ? "https://developers.facebook.com/docs/plugins/"
