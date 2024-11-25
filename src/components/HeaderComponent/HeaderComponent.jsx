@@ -1,6 +1,7 @@
-import { Badge, Col, Popover, message, notification } from 'antd';
+import { Badge, Col, Modal, Popover, message, notification } from 'antd';
 import React, { useEffect } from 'react';
 import {
+  IconWrapper,
   WrapperContentPopup,
   WrapperHeader,
   WrapperHeaderAccount,
@@ -11,6 +12,8 @@ import {
   UserOutlined,
   CaretDownOutlined,
   ShoppingCartOutlined,
+  PhoneOutlined,
+  ContactsOutlined,
 } from '@ant-design/icons';
 import ButtonInputSearch from '../ButtonInputSearch/ButtonInputSearch';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +24,9 @@ import { useState } from 'react';
 import Loading from '../LoadingComponent/Loading';
 import { searchProduct } from '../../redux/slides/productSlide';
 
+
 const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
@@ -96,6 +101,17 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     }
     setIsOpenPopup(false);
   };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+  const handleOk = () => {
+    setIsModalVisible(false);
+    // Thực hiện hành động gọi điện nếu cần
+
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
 
   const onSearch = (e) => {
@@ -103,17 +119,34 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     dispatch(searchProduct(e.target.value));
   }
   return (
-    <div style={{ width: '100%', background: 'rgb(26, 148, 255)', display: 'flex', justifyContent: 'center' }}>
+    <div style={{ width: '100%', background: '#d70018', display: 'flex', justifyContent: 'center' }}>
       <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenSearch ? 'space-between' : 'unset' }}>
         <Col span={5}>
-          <WrapperTextHeader to='/'>SHOPEEVN</WrapperTextHeader>
+          <WrapperTextHeader to='/'>ঔ𝒮𝒽𝑜𝓅𝒯𝓊𝒩𝒶亗</WrapperTextHeader>
         </Col>
+        <div style={{ margin: '0 16px', display: 'flex', alignItems: 'center', fontSize: '24px', color: '#fff' }}>
+          <ContactsOutlined />
+        </div>
+        <IconWrapper>
+          <PhoneOutlined onClick={showModal} />
+        </IconWrapper>
+        <Modal
+          title="Xác nhận gọi điện"
+          visible={isModalVisible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          okText="OK"
+          cancelText="Hủy"
+        >
+          <p>Hãy gọi vào theo số 0362297649</p>
+        </Modal>
+
         {!isHiddenSearch && (
           <Col span={13}>
             <ButtonInputSearch
               size="large"
-              texbutton="Tìm kiếm"
-              placeholder="input search text"
+              // texbutton="Tìm kiếm"
+              placeholder="Bạn cần tìm gì?"
               onChange={onSearch}
             />
           </Col>

@@ -120,7 +120,7 @@ export const SelectSort = styled.select`
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #fff;
+    background-color: #ccc;
     cursor: pointer;
     transition: all 0.3s ease;
 
@@ -137,7 +137,7 @@ export const SelectSort = styled.select`
 /* Style cho nút Reset */
 export const ResetButton = styled(Button)`
     padding: 10px 20px;
-    background-color: #f5f5f5;
+    background-color: #ccc;
     color: #0d5cb6;
     border: 1px solid #ccc;
     border-radius: 8px;

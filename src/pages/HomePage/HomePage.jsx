@@ -12,15 +12,22 @@ import slider1 from '../../assets/images/slider1.webp';
 import slider2 from '../../assets/images/slider2.webp';
 import slider3 from '../../assets/images/slider3.webp';
 import slider4 from '../../assets/images/slidet1.webp';
+import slider5 from '../../assets/images/logo1.webp';
+import slider6 from '../../assets/images/log2.webp';
+import slider7 from '../../assets/images/lo3.webp';
+import slider8 from '../../assets/images/lo4.webp';
+import slider9 from '../../assets/images/lo9.webp';
 import { Button } from 'antd';
-
+import { Slider } from 'antd';
 const HomePage = () => {
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const searchProduct = useSelector((state) => state?.product?.search);
   const searchDebounce = useDebounce(searchProduct, 500);
   const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(6);
   const [typeProducts, setTypeProducts] = useState([]);
   const [sortOption, setSortOption] = useState('selled');  // Default sort by selled
+
 
   const fetchProductAll = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
@@ -52,9 +59,11 @@ const HomePage = () => {
   // Sắp xếp sản phẩm theo lựa chọn
   const sortedProducts = [...(products?.data || [])].sort((a, b) => {
     if (sortOption === 'selled') {
-      return b.selled - a.selled; // Sắp xếp theo số lượng bán
-    } else if (sortOption === 'price') {
-      return a.price - b.price; // Sắp xếp theo giá
+      return b.selled - a.selled;
+    } else if (sortOption === 'price-asc') {
+      return a.price - b.price;
+    } else if (sortOption === 'price-desc') {
+      return b.price - a.price;
     }
     return 0;
   });
@@ -68,6 +77,12 @@ const HomePage = () => {
     setSortOption('selled'); // Reset về mặc định (sắp xếp theo số lượng bán)
     setLimit(6); // Reset số lượng sản phẩm hiển thị
   };
+  const handlePriceChange = (value) => {
+    setPriceRange(value); // Cập nhật khoảng giá
+  };
+  const filteredProducts = [...(products?.data || [])].filter(product => {
+    return product.price >= priceRange[0] && product.price <= priceRange[1];
+  });
 
   return (
     <Loading isPending={isPending || loading}>
@@ -83,16 +98,23 @@ const HomePage = () => {
         <div id="container" style={{ width: '1270px', margin: '0 auto' }}>
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: '100%', maxWidth: '1270px', margin: '0 20px' }}>
-              <SliderComponent arrImages={[slider1, slider2, slider3, slider4]} />
+              <SliderComponent arrImages={[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9]} />
             </div>
           </div>
 
+
           {/* Dropdown để chọn cách sắp xếp */}
           <WrapperSortOptions style={{ marginBottom: '20px' }}>
-            <SelectSort value={sortOption} onChange={handleSortChange} style={{ padding: '10px', fontSize: '16px' }}>
+            <SelectSort
+              value={sortOption}
+              onChange={handleSortChange}
+              style={{ padding: '10px', fontSize: '16px' }}
+            >
               <option value="selled">Sắp xếp theo số lượng bán</option>
-              <option value="price">Sắp xếp theo giá</option>
+              <option value="price-asc">Giá thấp đến cao</option>
+              <option value="price-desc">Giá cao đến thấp</option>
             </SelectSort>
+
 
             {/* Nút Reset */}
             <ResetButton

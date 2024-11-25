@@ -12,6 +12,7 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 
 export const routes = [
     {
@@ -84,11 +85,19 @@ export const routes = [
         isShowHeader: true
 
     },
+    ,
     {
         path: '/system/admin',
         page: AdminPage,
         isShowHeader: false,
         isPrivate: true
+
+    },
+    {
+        path: '/forgot-password',
+        page: ForgotPasswordPage,
+        isShowHeader: false,
+        isPrivate: false,
 
     },
     {

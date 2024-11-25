@@ -1,9 +1,10 @@
-import { Row } from "antd";
+import { Col, Row } from "antd";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const WrapperHeader = styled(Row)`
-    background-color: rgb(26, 148, 255);
+
+    background-color: #d70018;
     align-items: center;
     gap: 16px;
     flex-wrap: nowrap;
@@ -23,18 +24,25 @@ export const WrapperHeader = styled(Row)`
 `;
 
 export const WrapperTextHeader = styled(Link)`
-    font-size: 18px;
-    color: #fff;
-    font-weight: bold;
-    text-align: left;
-    text-decoration: none; /* Không có gạch dưới */
-    transition: color 0.3s ease-in-out;
-    
-    &:hover {
-        color: #ffcc00; /* Màu vàng khi hover */
-        text-decoration: underline;
-    }
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 16px; /* Tạo khoảng cách giữa chữ và viền */
+  border: 2px solid #fff; /* Bo viền màu trắng */
+  border-radius: 8px; /* Bo góc viền */
+  display: inline-block; /* Giúp phần viền bao quanh chữ */
+  background-color: #d70018; /* Nền đồng màu với header */
+  text-align: center; /* Căn giữa chữ */
+  transition: all 0.3s ease; /* Hiệu ứng hover */
+  
+  &:hover {
+    background-color: #fff;
+    color: #d70018;
+    border-color: #d70018;
+  }
 `;
+
 
 export const WrapperHeaderAccount = styled.div`
     display: flex;
@@ -54,6 +62,10 @@ export const WrapperHeaderAccount = styled.div`
         gap: 8px;
         font-size: 12px;
     }
+`;
+export const IconWrapper = styled(Col)`
+  font-size: 30px; /* Thay đổi kích thước biểu tượng */
+  color: white; /* Đặt màu trắng cho biểu tượng */
 `;
 
 export const WrapperTextHeaderSmall = styled.span`

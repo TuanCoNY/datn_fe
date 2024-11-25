@@ -179,6 +179,6 @@ export const WrapperStyleImageCenter = styled.div`
     display: flex;
     justify-content: center; /* Canh giữa theo chiều ngang */
     align-items: center; /* Canh giữa theo chiều dọc */
-    height: 40vh; /* Chiều cao toàn màn hình, có thể chỉnh */
+    height: 50vh; /* Chiều cao toàn màn hình, có thể chỉnh */
     border: 1px solid #blue; /* Tùy chọn: thêm đường viền để kiểm tra */
 `;

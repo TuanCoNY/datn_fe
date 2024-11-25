@@ -19,6 +19,8 @@ import { useState } from 'react'
 
 
 const AdminUser = () => {
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
 
     const [rowSelected, setRowSelected] = useState('')
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -111,7 +113,6 @@ const AdminUser = () => {
     }, [rowSelected, isOpenDrawer])
     const handleDetailsProduct = () => {
         setIsOpenDrawer(true)
-
     }
     const { data: dataUpdated, isPending: isPendingUpdated, isSuccess: isSuccessUpdated, isError: isErrorUpdated } = mutationUpdate
     const { data: dataDeleted, isPending: isPendingDeleted, isSuccess: isSuccessDeleted, isError: isErrorDeleted } = mutationDeleted
@@ -132,32 +133,25 @@ const AdminUser = () => {
     }
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
-        // setSearchText(selectedKeys[0]);
-        // setSearchedColumn(dataIndex);
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
     };
     const handleReset = (clearFilters) => {
         clearFilters();
-        // setSearchText('');
+        setSearchText('');
+        setSearchedColumn('');
     };
 
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div
-                style={{
-                    padding: 8,
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-            >
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div style={{ padding: 8 }}>
                 <InputComponent
                     ref={searchInput}
-                    placeholder={`Search ${dataIndex}`}
+                    placeholder={`Tìm kiếm ${dataIndex}`}
                     value={selectedKeys[0]}
                     onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
                     onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{
-                        marginBottom: 8,
-                        display: 'block',
-                    }}
+                    style={{ marginBottom: 8, display: 'block' }}
                 />
                 <Space>
                     <Button
@@ -165,62 +159,33 @@ const AdminUser = () => {
                         onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
                         icon={<SearchOutlined />}
                         size="small"
-                        style={{
-                            width: 90,
-                        }}
+                        style={{ width: 90 }}
                     >
                         Search
                     </Button>
                     <Button
                         onClick={() => clearFilters && handleReset(clearFilters)}
                         size="small"
-                        style={{
-                            width: 90,
-                        }}
+                        style={{ width: 90 }}
                     >
                         Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        close
                     </Button>
                 </Space>
             </div>
         ),
         filterIcon: (filtered) => (
-            <SearchOutlined
-                style={{
-                    color: filtered ? '#1677ff' : undefined,
-                }}
-            />
+            <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
         ),
         onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        // render: (text) =>
-        //     searchedColumn === dataIndex ? (
-        //         // <Highlighter
-        //         //     highlightStyle={{
-        //         //         backgroundColor: '#ffc069',
-        //         //         padding: 0,
-        //         //     }}
-        //         //     searchWords={[searchText]}
-        //         //     autoEscape
-        //         //     textToHighlight={text ? text.toString() : ''}
-        //         // />
-        //     ) : (
-        //         text
-        //     ),
+            record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <span style={{ backgroundColor: '#ffc069', padding: 0 }}>{text}</span>
+            ) : (
+                text
+            ),
     });
+
     const columns = [
         {
             title: 'Name',
@@ -245,7 +210,7 @@ const AdminUser = () => {
             dataIndex: 'isAdmin',
             filters: [
                 {
-                    text: 'true',
+                    text: 'True',
                     value: true,
                 },
                 {
@@ -310,6 +275,7 @@ const AdminUser = () => {
         setIsModalOpenDelete(false)
     }
     const handleDeleteUser = () => {
+
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
                 queryUser.refetch()

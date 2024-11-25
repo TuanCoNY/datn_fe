@@ -17,13 +17,20 @@ const CardComponent = (props) => {
         <WrapperCardStyle
             hoverable
             styles={{
-                header: { width: '200px', height: '200px' }, // Thay thế headStyle
-                body: { padding: '10px' }, // Thay thế bodyStyle
+                header: { width: '200px', height: '200px' },
+                body: { padding: '10px' },
             }}
-            style={{ width: 200 }}
+            style={{ width: 200, position: 'relative' }} // Thêm position: relative để sử dụng vị trí tuyệt đối
             cover={<img alt="example" src={image} />}
             onClick={() => handleDetailsProduct(id)}
         >
+            {/* Hiển thị phần giảm giá */}
+            {discount && (
+                <div className="fire-shape">
+                    <WrapperDiscountText>-{discount}%</WrapperDiscountText>
+                </div>
+            )}
+
             <img
                 src={logo}
                 alt="logo"
@@ -45,32 +52,23 @@ const CardComponent = (props) => {
                 <WrapperStyleTextSell> | Đã bán {selled || 1000}+</WrapperStyleTextSell>
             </WrapperReportText>
             <WrapperPriceText>
-                {/* Kiểm tra nếu có discount */}
                 {discount ? (
                     <>
-                        {/* Giá cũ bị gạch bỏ */}
                         <span style={{ marginRight: '8px', textDecoration: 'line-through' }}>
                             {convertPrice(price)}
                         </span>
                         <WrapperDiscountText>- {discount}%</WrapperDiscountText>
-
-                        {/* Giá mới sau khi giảm */}
                         <div style={{ marginRight: '8px' }}>
                             {convertPrice(price - (price * discount / 100))}
                         </div>
-
-                        {/* Hiển thị giảm giá */}
-
                     </>
                 ) : (
-                    // Nếu không có discount, chỉ hiển thị giá gốc
-                    <span style={{ marginRight: '8px' }}>
-                        {convertPrice(price)}
-                    </span>
+                    <span style={{ marginRight: '8px' }}>{convertPrice(price)}</span>
                 )}
             </WrapperPriceText>
-
         </WrapperCardStyle>
+
+
     );
 };
 

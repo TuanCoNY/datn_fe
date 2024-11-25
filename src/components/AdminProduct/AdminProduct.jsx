@@ -4,7 +4,7 @@ import { Button, Form, Input, Select, Space } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons'
 import TableComponent from '../TableComponent/TableComponent'
 import InputComponent from '../InputComponent/InputComponent'
-import { getBase64, renderOptions } from '../../utils'
+import { convertPrice, getBase64, renderOptions } from '../../utils'
 import * as ProductService from '../../services/ProductService'
 import { useMutationHooks } from '../../hooks/useMutationHooks'
 import Loading from '../../components/LoadingComponent/Loading'
@@ -261,20 +261,6 @@ const AdminProduct = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // render: (text) =>
-        //     searchedColumn === dataIndex ? (
-        //         // <Highlighter
-        //         //     highlightStyle={{
-        //         //         backgroundColor: '#ffc069',
-        //         //         padding: 0,
-        //         //     }}
-        //         //     searchWords={[searchText]}
-        //         //     autoEscape
-        //         //     textToHighlight={text ? text.toString() : ''}
-        //         // />
-        //     ) : (
-        //         text
-        //     ),
     });
     const columns = [
         {
@@ -341,8 +327,17 @@ const AdminProduct = () => {
         },
     ];
     const dataTable = products?.data?.length && products?.data?.map((product) => {
-        return { ...product, key: product._id }
+        return { ...product, key: product._id, price: convertPrice(product?.price) }
     })
+    // const dataTable = orders?.data?.length && orders?.data?.map((order) => {
+    //     console.log('user', user)
+    //     return {
+    //         ...order, key: order._id, userName: order?.shippingAddress?.fullName, phone: order?.shippingAddress?.phone,
+    //         address: order?.shippingAddress?.address, paymentMethod: orderContant.payment[order?.paymentMethod],
+    //         isPaid: order?.isPaid ? 'TRUE' : 'FALSE', isDelivered: order?.isDelivered ? 'TRUE' : 'FALSE', totalPrice: convertPrice(order?.totalPrice),
+    //         itemsPrice: convertPrice(order?.itemsPrice)
+    //     }
+    // })
 
 
     useEffect(() => {
