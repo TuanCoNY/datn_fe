@@ -22,6 +22,7 @@ export const resetPasswordService = async (data) => {
     }
 };
 
+
 export const signupUser = async (data) => {
     const res = await axios.post(`${process.env.REACT_APP_API_URL}/user/sign-up`, data);
     console.log('data', res.data);
@@ -87,3 +88,15 @@ export const deleteManyUser = async (data, access_token) => {
 
 // Thêm phương thức quên mật khẩu
 
+export const sendVerificationCode = async (email) => {
+    // (`${process.env.REACT_APP_API_URL}/user/log-out`)
+    return await axios.post(`${process.env.REACT_APP_API_URL}/user/send-code`, { email });
+};
+
+export const verifyCode = async (email, code) => {
+    return await axios.post(`${process.env.REACT_APP_API_URL}/user/verify-code`, { email, code });
+};
+
+export const resetPassword = async (email, newPassword) => {
+    return await axios.post(`${process.env.REACT_APP_API_URL}/user/forgot-password`, { email, newPassword });
+};

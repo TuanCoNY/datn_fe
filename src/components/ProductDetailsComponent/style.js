@@ -60,7 +60,7 @@ export const WrapperStyleTextSell = styled.span`
 
 // Tạo hiệu ứng và màu sắc cho giá sản phẩm
 export const WrapperPriceProduct = styled.div`
-    background: #007BFF; /* Màu nền xanh */
+    background: #f8d7da; /* Màu nền xanh */
     color: #fff; /* Màu chữ trắng */
     border-radius: 12px; /* Bo góc tự động với border-radius */
     padding: 8px 16px; /* Padding tự động theo nội dung */
@@ -82,25 +82,34 @@ export const WrapperPriceProduct = styled.div`
 
 
 // Thiết kế đẹp cho giá trị sản phẩm
+
+
+
+
 export const WrapperPriceTextProduct = styled.h1`
-    font-size: 18px; /* Giảm kích thước font chữ */
-    font-weight: 500; /* Giảm độ đậm của font */
-    line-height: 24px; /* Điều chỉnh khoảng cách dòng */
+    font-size: 16px; /* Giảm kích thước font chữ để dễ đọc */
+    font-weight: 400; /* Giảm độ đậm của font */
+    line-height: 22px; /* Điều chỉnh khoảng cách dòng */
     margin-right: 5px; /* Giảm khoảng cách bên phải */
-    color: #333;
+    color: #333; /* Màu chữ tối */
     padding: 4px 6px; /* Giảm padding */
     margin-top: 5px; /* Giảm khoảng cách phía trên */
     transition: color 0.3s ease, background-color 0.3s ease;
 
     max-width: 200px; /* Giới hạn chiều rộng để không quá dài */
-    width: 300px; /* Cho phép phần tử sử dụng toàn bộ chiều rộng nhưng không vượt quá max-width */
+    width: 100%; /* Cho phép phần tử sử dụng toàn bộ chiều rộng của container */
     text-align: left; /* Căn lề sang trái */
-    
+
+    background-color: #f8d7da; /* Màu nền đỏ hồng nhẹ */
+    box-shadow: none; /* Loại bỏ bóng */
+
     &:hover {
         color: #fff; /* Đổi màu chữ khi hover */
-        background-color: #007BFF; /* Màu nền khi hover */
+        background-color: #e3c1d5; /* Màu nền hồng nhạt nhẹ khi hover */
     }
 `;
+
+
 
 
 
