@@ -78,6 +78,10 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
         Đơn hàng của tôi
       </WrapperContentPopup>
 
+      <WrapperContentPopup onClick={() => handleClickNavigate('my-discount')}>
+        Khuyến mại của tôi
+      </WrapperContentPopup>
+
       <WrapperContentPopup onClick={() => handleClickNavigate()}>
         Đăng xuất
       </WrapperContentPopup>
@@ -96,6 +100,9 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
           token: user?.access_token,
         }
       });
+    } else if (type === 'my-discount') {
+      navigate('/my-discount')
+
     } else {
       handleLogout();
     }

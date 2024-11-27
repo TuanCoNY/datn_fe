@@ -13,6 +13,7 @@ import SignInPage from "../pages/SignInPage/SignInPage";
 import SignUpPage from "../pages/SignUpPage/SignUpPage";
 import TypeProductPage from "../pages/TypeProductPage/TypeProductPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
+import DiscountPage from "../pages/DiscountPage/DiscountPage";
 
 export const routes = [
     {
@@ -25,6 +26,13 @@ export const routes = [
     {
         path: '/my-order',
         page: MyOrderPage,
+        isShowHeader: true
+
+    },
+
+    {
+        path: '/my-discount',
+        page: DiscountPage,
         isShowHeader: true
 
     },
