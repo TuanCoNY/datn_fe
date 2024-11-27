@@ -1,8 +1,9 @@
 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import imageLogo from '../../assets/images/logo-login.png';
 import { useNavigate } from 'react-router-dom';
-import { Input, Button, message } from 'antd';
+import { Input, Button, message, Image } from 'antd';
 import { WrapperContainerLeft, WrapperContainerRight, WrapperTextLight } from '../SignInPage/style';
 import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons';
 import * as UserService from '../../services/UserService';
@@ -27,8 +28,16 @@ const ForgotPasswordPage = () => {
     const mutation = useMutationHooks(({ email, newPassword }) => UserService.resetPassword({ email, newPassword }));
 
     console.log('mutatin', mutation)
+    const { isPending, isSuccess, data, isError } = mutation;
+
     console.log('email, newPassword', email, newPassword)
-    const { isPending, isSuccess, data } = mutation;
+    useEffect(() => {
+        if (isSuccess) {
+            message.success('Đổi mật khẩu thành công!');
+            navigate('/sign-in')
+        }
+    }, [isSuccess]);  // Cập nhật theo cả isSuccess và isError
+
 
 
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -37,6 +46,9 @@ const ForgotPasswordPage = () => {
         const value = e.target.value;
         setEmail(value);
         setEmailError(validateEmail(value) ? '' : '(1) Email không hợp lệ');
+    };
+    const handleNavigateSignIn = () => {
+        navigate('/sign-in');
     };
 
     const handleSendVerificationCode = () => {
@@ -190,9 +202,13 @@ const ForgotPasswordPage = () => {
                             </Loading>
                         </>
                     )}
+                    <p>
+                        <WrapperTextLight onClick={handleNavigateSignIn}>Đăng Nhập</WrapperTextLight>
+                    </p>
                 </WrapperContainerLeft>
                 <WrapperContainerRight>
-                    <h4></h4>
+                    <Image src={imageLogo} preview={false} alt="image-logo" height="203px" width="203px" />
+                    <h4>Mua sắm tại ঔ𝒮𝒽𝑜𝓅𝒯𝓊𝒩𝒶亗</h4>
                 </WrapperContainerRight>
             </div>
         </div>

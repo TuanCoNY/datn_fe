@@ -274,15 +274,52 @@ const AdminUser = () => {
     const handleCancelDelete = () => {
         setIsModalOpenDelete(false)
     }
-    const handleDeleteUser = () => {
+    // const handleDeleteUser = () => {
 
+    //     mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
+    //         onSettled: () => {
+    //             queryUser.refetch()
+    //         }
+    //     })
+
+    // }
+    console.log("Dữ liệu trả về từ queryUser.data:", queryUser.data);
+
+    const handleDeleteUser = () => {
+        // Kiểm tra trạng thái loading
+        if (queryUser.isLoading) {
+            console.log("Dữ liệu đang tải...");
+            return;
+        }
+
+        // Kiểm tra nếu queryUser.data không hợp lệ hoặc không có data
+        if (!queryUser.data || !Array.isArray(queryUser.data.data)) {
+            console.error("Dữ liệu queryUser.data không hợp lệ.");
+            return;
+        }
+
+        // Lấy danh sách người dùng
+        const userList = queryUser.data.data;
+
+        // Tìm người dùng cần xóa
+        const selectedUser = userList.find(user => user._id === rowSelected);
+
+        //Kiểm tra nếu người dùng là admin
+        if (selectedUser?.isAdmin) {
+            message.error("Không thể xóa tài khoản admin.");
+            return;
+        }
+
+        // Thực hiện xóa nếu không phải admin
         mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
             onSettled: () => {
-                queryUser.refetch()
+                queryUser.refetch(); // Làm mới danh sách người dùng
             }
-        })
+        });
+    };
 
-    }
+
+
     const handleOnchangeDetails = (e) => {
         setStateUserDetails({
             ...stateUserDetails,
