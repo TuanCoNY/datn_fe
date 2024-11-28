@@ -11,7 +11,8 @@ import { useDebounce } from '../../hooks/useDebounce';
 import Slider from 'react-slick';
 
 import {
-    HomeOutlined
+    HomeOutlined,
+    RightOutlined,
 } from '@ant-design/icons';
 
 // Import các ảnh slider từ thư mục assets
@@ -105,8 +106,8 @@ const TypeProductPage = () => {
                                     <HomeOutlined style={{ marginRight: '8px' }} />
                                     Trang chủ
                                 </Link>
-                                {' -> '}
-                                <span style={{ color: '#707070' }}>{state || 'Danh mục sản phẩm'}</span>
+                                <RightOutlined style={{ height: '5px', width: '15px' }} />
+                                <span style={{ color: '#707070' }}> {state || 'Danh mục sản phẩm'}</span>
                             </h2>
 
                             {/* Danh sách sản phẩm */}

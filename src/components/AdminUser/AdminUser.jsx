@@ -10,12 +10,13 @@ import ModalComponent from '../ModalComponent/ModalComponent'
 import *as message from '../../components/Message/Message'
 import { getBase64 } from '../../utils'
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useMutationHooks } from '../../hooks/useMutationHooks'
 import * as UserService from '../../services/UserService'
 import { useQuery } from '@tanstack/react-query'
 import { useRef } from 'react'
 import { useState } from 'react'
+import { updateUser } from '../../redux/slides/userSlide'
 
 
 const AdminUser = () => {
@@ -28,6 +29,7 @@ const AdminUser = () => {
     const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
     const user = useSelector((state) => state?.user)
     const searchInput = useRef(null);
+    const dispatch = useDispatch()
 
     const [stateUserDetails, setStateUserDetails] = useState({
         name: '',
@@ -111,6 +113,7 @@ const AdminUser = () => {
             fetchGetDetailsUser(rowSelected)
         }
     }, [rowSelected, isOpenDrawer])
+
     const handleDetailsProduct = () => {
         setIsOpenDrawer(true)
     }
@@ -131,6 +134,7 @@ const AdminUser = () => {
             </div>
         )
     }
+
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
         setSearchText(selectedKeys[0]);
@@ -190,20 +194,20 @@ const AdminUser = () => {
         {
             title: 'Name',
             dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name')
+            sorter: (a, b) => (a.name?.length || 0) - (b.name?.length || 0),
+            ...getColumnSearchProps('name'),
         },
         {
             title: 'Email',
             dataIndex: 'email',
-            sorter: (a, b) => a.email.length - b.email.length,
-            ...getColumnSearchProps('email')
+            sorter: (a, b) => (a.email?.length || 0) - (b.email?.length || 0),
+            ...getColumnSearchProps('email'),
         },
         {
             title: 'Address',
             dataIndex: 'address',
-            sorter: (a, b) => a.adress.length - b.adress.length,
-            ...getColumnSearchProps('address')
+            sorter: (a, b) => (a.address?.length || 0) - (b.address?.length || 0),
+            ...getColumnSearchProps('address'),
         },
         {
             title: 'Admin',
@@ -222,15 +226,16 @@ const AdminUser = () => {
         {
             title: 'Phone',
             dataIndex: 'phone',
-            sorter: (a, b) => a.phone - b.phone,
-            ...getColumnSearchProps('phone')
+            sorter: (a, b) => (a.phone || '').localeCompare(b.phone || ''),
+            ...getColumnSearchProps('phone'),
         },
         {
             title: 'Action',
             dataIndex: 'action',
-            render: renderAction
+            render: renderAction,
         },
     ];
+
     const dataTable = users?.data?.length && users?.data?.map((user) => {
         return { ...user, key: user._id, isAdmin: user.isAdmin ? 'TRUE' : 'FALSE' }
     })
@@ -274,15 +279,7 @@ const AdminUser = () => {
     const handleCancelDelete = () => {
         setIsModalOpenDelete(false)
     }
-    // const handleDeleteUser = () => {
 
-    //     mutationDeleted.mutate({ id: rowSelected, token: user?.access_token }, {
-    //         onSettled: () => {
-    //             queryUser.refetch()
-    //         }
-    //     })
-
-    // }
     console.log("Dữ liệu trả về từ queryUser.data:", queryUser.data);
 
     const handleDeleteUser = () => {
@@ -336,13 +333,46 @@ const AdminUser = () => {
             avatar: (file.preview)
         })
     }
-    const onUpdateUser = () => {
-        mutationUpdate.mutate({ id: rowSelected, token: user?.access_token, ...stateUserDetails }, {
-            onSettled: () => {
-                queryUser.refetch()
-            }
-        })
+    const handleGetDetailsUser = async (id, token) => {
+        const res = await UserService.getDetailsUser(id, token)
+        dispatch(updateUser({ ...res?.data, access_token: token }))
     }
+    const onUpdateUser = () => {
+        if (!rowSelected) {
+            console.error("No user selected for update");
+            return;
+        }
+
+        mutationUpdate.mutate(
+            { id: rowSelected, token: user?.access_token, ...stateUserDetails },
+            {
+                onSuccess: (data) => {
+                    // Cập nhật lại thông tin người dùng trong Redux store
+                    dispatch(updateUser({
+                        ...stateUserDetails, // Thông tin vừa chỉnh sửa
+                        access_token: user?.access_token, // Token người dùng
+                        _id: rowSelected, // ID của người dùng
+                        isAdmin: user?.isAdmin, // Vai trò hiện tại
+                        city: user?.city, // Thông tin khác (nếu cần)
+                    }));
+
+                    // Lấy thông tin người dùng sau khi cập nhật
+                    handleGetDetailsUser(rowSelected, user?.access_token);
+                },
+                onError: () => {
+                    // Hiển thị thông báo lỗi
+                    message.error("Cập nhật thông tin thất bại, vui lòng thử lại!");
+                },
+                onSettled: () => {
+                    // Làm mới danh sách người dùng để đồng bộ hóa dữ liệu
+                    queryUser.refetch();
+                },
+            }
+        );
+    };
+
+
+
     return (
         <div>
             <WrapperHeader> Quản lý người dùng</WrapperHeader>

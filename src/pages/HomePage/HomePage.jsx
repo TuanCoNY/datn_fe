@@ -4,10 +4,18 @@ import * as ProductService from '../../services/ProductService';
 import { useSelector } from 'react-redux';
 import Loading from '../../components/LoadingComponent/Loading';
 import { useDebounce } from '../../hooks/useDebounce';
-import { ResetButton, SelectSort, WrapperButtonMore, WrapperProducts, WrapperSortOptions, WrapperTypeProduct } from './style';
+import {
+  ResetButton,
+  SelectSort,
+  WrapperButtonMore,
+  WrapperProducts,
+  WrapperSortOptions,
+  WrapperTypeProduct
+} from './style';
 import TypeProduct from '../../components/TypeProduct/TypeProduct';
 import SliderComponent from '../../components/SliderComponent/SliderComponent';
 import CardComponent from '../../components/CardComponent/CardComponent';
+import { DownCircleOutlined } from '@ant-design/icons';
 import slider1 from '../../assets/images/slider1.webp';
 import slider2 from '../../assets/images/slider2.webp';
 import slider3 from '../../assets/images/slider3.webp';
@@ -17,17 +25,15 @@ import slider6 from '../../assets/images/log2.webp';
 import slider7 from '../../assets/images/lo3.webp';
 import slider8 from '../../assets/images/lo4.webp';
 import slider9 from '../../assets/images/lo9.webp';
-import { Button } from 'antd';
-import { Slider } from 'antd';
+
 const HomePage = () => {
-  const [priceRange, setPriceRange] = useState([0, 1000]);
   const searchProduct = useSelector((state) => state?.product?.search);
   const searchDebounce = useDebounce(searchProduct, 500);
   const [loading, setLoading] = useState(false);
   const [limit, setLimit] = useState(6);
   const [typeProducts, setTypeProducts] = useState([]);
-  const [sortOption, setSortOption] = useState('selled');  // Default sort by selled
-
+  const [sortOption, setSortOption] = useState('selled'); // Default sort by selled
+  const [showSortOptions, setShowSortOptions] = useState(false);
 
   const fetchProductAll = async (context) => {
     const limit = context?.queryKey && context?.queryKey[1];
@@ -77,12 +83,24 @@ const HomePage = () => {
     setSortOption('selled'); // Reset về mặc định (sắp xếp theo số lượng bán)
     setLimit(6); // Reset số lượng sản phẩm hiển thị
   };
-  const handlePriceChange = (value) => {
-    setPriceRange(value); // Cập nhật khoảng giá
+
+  const handleToggleSortOptions = () => {
+    setShowSortOptions((prev) => !prev); // Đảo trạng thái ẩn/hiện dropdown
   };
-  const filteredProducts = [...(products?.data || [])].filter(product => {
-    return product.price >= priceRange[0] && product.price <= priceRange[1];
-  });
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-container')) {
+        setShowSortOptions(false); // Đóng dropdown nếu click ra ngoài
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside); // Dọn dẹp sự kiện
+    };
+  }, []);
 
   return (
     <Loading isPending={isPending || loading}>
@@ -94,46 +112,53 @@ const HomePage = () => {
         </WrapperTypeProduct>
       </div>
 
-      <div className='body' style={{ width: '100%', backgroundColor: '#efefef' }}>
+      <div className="body" style={{ width: '100%', backgroundColor: '#efefef' }}>
         <div id="container" style={{ width: '1270px', margin: '0 auto' }}>
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: '100%', maxWidth: '1270px', margin: '0 20px' }}>
-              <SliderComponent arrImages={[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9]} />
+              <SliderComponent
+                arrImages={[slider1, slider2, slider3, slider4, slider5, slider6, slider7, slider8, slider9]}
+              />
             </div>
           </div>
 
-
           {/* Dropdown để chọn cách sắp xếp */}
-          <WrapperSortOptions style={{ marginBottom: '20px' }}>
-            <SelectSort
-              value={sortOption}
-              onChange={handleSortChange}
-              style={{ padding: '10px', fontSize: '16px' }}
-            >
-              <option value="selled">Sắp xếp theo số lượng bán</option>
-              <option value="price-asc">Giá thấp đến cao</option>
-              <option value="price-desc">Giá cao đến thấp</option>
-            </SelectSort>
+          <div className="dropdown-container" style={{ position: 'relative' }}>
+            <DownCircleOutlined
+              onClick={handleToggleSortOptions}
+              style={{ fontSize: '24px', cursor: 'pointer', marginRight: '10px' }}
+            />
+            {showSortOptions && (
+              <WrapperSortOptions>
+                <SelectSort
+                  value={sortOption}
+                  onChange={handleSortChange}
+                  style={{ padding: '10px', fontSize: '16px' }}
+                >
+                  <option value="selled">Sắp xếp theo số lượng bán</option>
+                  <option value="price-asc">Giá thấp đến cao</option>
+                  <option value="price-desc">Giá cao đến thấp</option>
+                </SelectSort>
 
-
-            {/* Nút Reset */}
-            <ResetButton
-              onClick={handleReset}
-              style={{
-                padding: '10px 20px',
-                marginLeft: '10px',
-                backgroundColor: '#f5f5f5',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              Reset
-            </ResetButton>
-          </WrapperSortOptions>
+                <ResetButton
+                  onClick={handleReset}
+                  style={{
+                    padding: '10px 20px',
+                    marginLeft: '10px',
+                    backgroundColor: '#f5f5f5',
+                    border: '1px solid #ccc',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Reset
+                </ResetButton>
+              </WrapperSortOptions>
+            )}
+          </div>
 
           <WrapperProducts>
-            {sortedProducts?.map((product) => (
+            {sortedProducts.map((product) => (
               <CardComponent
                 key={product._id}
                 countInStock={product.countInStock}
@@ -171,7 +196,5 @@ const HomePage = () => {
     </Loading>
   );
 };
-
-
 
 export default HomePage;
