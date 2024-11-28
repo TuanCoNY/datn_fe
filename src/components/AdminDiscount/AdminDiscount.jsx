@@ -1,215 +1,231 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Form, Space, Table, Drawer, Modal, Input, message } from 'antd';
-import { PlusOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from '@ant-design/icons';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import * as DiscountService from '../../services/DiscountService';
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Modal, Form, Input, DatePicker, Select, message } from 'antd';
+import * as DiscountService from '../../services/DiscountService'
+import moment from 'moment';
 
-const AdminDiscount = () => {
-    const [searchText, setSearchText] = useState('');
-    const [searchedColumn, setSearchedColumn] = useState('');
-    const [rowSelected, setRowSelected] = useState('');
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-    const [discountDetails, setDiscountDetails] = useState({ name: '', discountRate: 0 });
-    const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
-    const searchInput = useRef(null);
 
-    const { data: discounts, isLoading, refetch } = useQuery({
-        queryKey: ['discounts'],
-        queryFn: DiscountService.getAllDiscounts,
-    });
+const { Option } = Select;
 
+const AdminDiscount = ({ access_token }) => {
+    const [discounts, setDiscounts] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentDiscount, setCurrentDiscount] = useState(null);
     const [form] = Form.useForm();
 
-    const mutationCreate = useMutation({
-        mutationFn: DiscountService.createDiscount,
-        onSuccess: () => {
-            refetch();
-            message.success('Thêm mã giảm giá thành công!');
-            handleCloseDrawer();
-        },
-        onError: () => message.error('Thêm mã giảm giá thất bại!'),
-    });
+    // Lấy tất cả mã giảm giá khi component mount
+    useEffect(() => {
+        const fetchDiscounts = async () => {
+            try {
+                const data = await DiscountService.getAllDiscounts(access_token);
+                console.log("Data:", data.data);
+                setDiscounts(data.data);
+            } catch (error) {
+                message.error('Failed to fetch discounts');
+            }
+        };
 
-    const mutationUpdate = useMutation({
-        mutationFn: DiscountService.updateDiscount,
-        onSuccess: () => {
-            refetch();
-            message.success('Cập nhật mã giảm giá thành công!');
-            handleCloseDrawer();
-        },
-        onError: () => message.error('Cập nhật mã giảm giá thất bại!'),
-    });
+        fetchDiscounts();
+    }, [access_token]);
 
-    const mutationDelete = useMutation({
-        mutationFn: DiscountService.deleteDiscount,
-        onSuccess: () => {
-            refetch();
-            message.success('Xóa mã giảm giá thành công!');
-            setIsModalOpenDelete(false);
-        },
-        onError: () => message.error('Xóa mã giảm giá thất bại!'),
-    });
-
-    // Hàm tìm kiếm theo cột
-    const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-            <div style={{ padding: 8 }}>
-                <Input
-                    ref={searchInput}
-                    placeholder={`Tìm kiếm ${dataIndex}`}
-                    value={selectedKeys[0]}
-                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                    style={{ marginBottom: 8, display: 'block' }}
-                />
-                <Space>
-                    <Button
-                        type="primary"
-                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{ width: 90 }}
-                    >
-                        Tìm kiếm
-                    </Button>
-                    <Button onClick={() => clearFilters && handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-                        Đặt lại
-                    </Button>
-                </Space>
-            </div>
-        ),
-        filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />,
-        onFilter: (value, record) => record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
-    });
-
-    // Hàm xử lý tìm kiếm
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-        confirm();
-        setSearchText(selectedKeys[0]);
-        setSearchedColumn(dataIndex);
-    };
-
-    // Hàm reset tìm kiếm
-    const handleReset = (clearFilters) => {
-        clearFilters();
-        setSearchText('');
-        setSearchedColumn('');
-    };
-
-    const handleEditDiscount = (record) => {
-        setRowSelected(record.key);
-        setDiscountDetails({ name: record.name, discountRate: record.discountRate });
-        setIsOpenDrawer(true);
-    };
-
-    const handleDeleteDiscount = (key) => {
-        setRowSelected(key);
-        setIsModalOpenDelete(true);
-    };
-
-    const handleCloseDrawer = () => {
-        setIsOpenDrawer(false);
-        setDiscountDetails({ name: '', discountRate: 0 });
+    // Hiển thị modal tạo mới hoặc chỉnh sửa mã giảm giá
+    const showModal = (discount = null) => {
+        console.log('Discount Object:', discount);
+        setIsEditing(!!discount);
+        setCurrentDiscount(discount);
         form.resetFields();
+
+        // Lấy ID của sản phẩm từ discount (nếu có)
+        const productId = discount ? discount._id : null;
+        console.log('Product ID:', productId);  // In ID sản phẩm ra console để kiểm tra
+
+        if (discount) {
+            // Đảm bảo startDate và endDate là đối tượng moment hợp lệ
+            form.setFieldsValue({
+                ...discount,
+                startDate: discount.startDate ? moment(discount.startDate) : null,
+                endDate: discount.endDate ? moment(discount.endDate) : null,
+            });
+        }
+
+        setIsModalVisible(true);
     };
 
-    const handleSubmit = (values) => {
-        if (rowSelected) {
-            mutationUpdate.mutate({ ...values, id: rowSelected });
-        } else {
-            mutationCreate.mutate(values);
+
+    // Đóng modal
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    // Xử lý tạo hoặc cập nhật mã giảm giá
+    const handleOk = async () => {
+        try {
+            const values = await form.validateFields();
+
+            // Lấy productId từ currentDiscount nếu đang chỉnh sửa, nếu không lấy từ values khi tạo mới
+            const productId = isEditing ? currentDiscount.productId : values.productId; // Dùng currentDiscount để lấy ID nếu chỉnh sửa
+
+            // Kiểm tra nếu đang chỉnh sửa thì lấy _id của discount
+            const discountId = isEditing ? currentDiscount._id : undefined;
+
+            if (isEditing) {
+                // Nếu đang chỉnh sửa discount
+                await DiscountService.updateDiscount(access_token, {
+                    ...values,
+                    id: discountId,  // Truyền _id của khuyến mãi
+                    productId: productId  // Truyền productId
+                });
+                message.success('Discount updated successfully');
+            } else {
+                // Nếu tạo mới discount, truyền productId vào
+                await DiscountService.createDiscount(access_token, {
+                    ...values,
+                    productId: productId  // Truyền productId
+                });
+                message.success('Discount created successfully');
+            }
+
+            // Lấy lại danh sách mã giảm giá
+            const data = await DiscountService.getAllDiscounts(access_token);
+            setDiscounts(data.data);
+            setIsModalVisible(false);
+        } catch (error) {
+            message.error('Failed to save discount');
         }
     };
 
-    const handleConfirmDelete = () => {
-        mutationDelete.mutate(rowSelected);
+
+
+    // Xử lý xóa mã giảm giá
+    const handleDelete = async (discountId) => {
+        console.log('discountId', discountId)
+        try {
+            await DiscountService.deleteDiscount(access_token, discountId);
+            message.success('Discount deleted successfully');
+            const data = await DiscountService.getAllDiscounts(access_token);
+            setDiscounts(data.data);
+        } catch (error) {
+            message.error('Failed to delete discount');
+        }
     };
 
+    // Cấu hình bảng
     const columns = [
         {
             title: 'Tên mã giảm giá',
             dataIndex: 'name',
-            sorter: (a, b) => a.name.length - b.name.length,
-            ...getColumnSearchProps('name'),
+            key: 'name',
         },
         {
-            title: 'Giảm giá (%)',
+            title: 'Mô tả',
+            dataIndex: 'description',
+            key: 'description',
+        },
+        {
+            title: 'Loại giảm giá',
+            dataIndex: 'discountType',
+            key: 'discountType',
+        },
+        {
+            title: 'Giá trị giảm giá',
             dataIndex: 'discountValue',
-            sorter: (a, b) => a.discountValue - b.discountValue,
+            key: 'discountValue',
         },
         {
-            title: 'Hành động',
-            dataIndex: 'action',
-            render: (_, record) => (
-                <div>
-                    <EditOutlined
-                        style={{ color: 'blue', fontSize: '20px', cursor: 'pointer' }}
-                        onClick={() => handleEditDiscount(record)}
-                    />
-                    <DeleteOutlined
-                        style={{ color: 'red', fontSize: '20px', cursor: 'pointer' }}
-                        onClick={() => handleDeleteDiscount(record.key)}
-                    />
-                </div>
-            ),
+            title: 'Ngày bắt đầu',
+            dataIndex: 'startDate',
+            key: 'startDate',
+            render: (text) => new Date(text).toLocaleDateString(),
+        },
+        {
+            title: 'Ngày kết thúc',
+            dataIndex: 'endDate',
+            key: 'endDate',
+            render: (text) => new Date(text).toLocaleDateString(),
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => {
+                console.log(record);  // Kiểm tra đối tượng record
+                return (
+                    <>
+                        <Button onClick={() => showModal(record)}>Edit</Button>
+                        <Button onClick={() => handleDelete(record._id)} danger style={{ marginLeft: 8 }}>
+                            Delete
+                        </Button>
+                    </>
+                );
+            },
         },
     ];
 
     return (
         <div>
-            <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                style={{ marginBottom: 20 }}
-                onClick={() => setIsOpenDrawer(true)}
-            >
-                Thêm mã giảm giá
+            <Button type="primary" onClick={() => showModal()} style={{ marginBottom: 16 }}>
+                Tạo mã giảm giá mới
             </Button>
+            <Table columns={columns} dataSource={discounts} rowKey="_id" />
 
-            <Table
-                columns={columns}
-                dataSource={discounts?.data}  // Lưu ý phần này là `discounts?.data`
-                rowKey="key"
-                loading={isLoading}
-                pagination={{ pageSize: 5 }}
-            />
-
-            <Drawer
-                title={rowSelected ? 'Cập nhật mã giảm giá' : 'Thêm mã giảm giá'}
-                width={400}
-                onClose={handleCloseDrawer}
-                visible={isOpenDrawer}
+            <Modal
+                title={isEditing ? 'Cập nhật mã giảm giá' : 'Tạo mã giảm giá'}
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                okText={isEditing ? 'Cập nhật' : 'Tạo'}
             >
-                <Form form={form} onFinish={handleSubmit} initialValues={discountDetails}>
+                <Form form={form} layout="vertical">
                     <Form.Item
                         label="Tên mã giảm giá"
                         name="name"
-                        rules={[{ required: true, message: 'Vui lòng nhập tên mã giảm giá!' }]}
+                        rules={[{ required: true, message: 'Vui lòng nhập tên mã giảm giá' }]}
                     >
                         <Input />
                     </Form.Item>
+
                     <Form.Item
-                        label="Giảm giá (%)"
-                        name="discountRate"
-                        rules={[{ required: true, message: 'Vui lòng nhập tỷ lệ giảm giá!' }]}
+                        label="Mô tả"
+                        name="description"
+                        rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
                     >
-                        <Input type="number" min={0} max={100} />
+                        <Input />
                     </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                            {rowSelected ? 'Cập nhật' : 'Thêm'}
-                        </Button>
+
+                    <Form.Item
+                        label="Loại giảm giá"
+                        name="discountType"
+                        rules={[{ required: true, message: 'Vui lòng chọn loại giảm giá' }]}
+                    >
+                        <Select>
+                            <Option value="percentage">Phần trăm</Option>
+                            <Option value="amount">Số tiền</Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Giá trị giảm giá"
+                        name="discountValue"
+                        rules={[{ required: true, message: 'Vui lòng nhập giá trị giảm giá' }]}
+                    >
+                        <Input type="number" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Ngày bắt đầu"
+                        name="startDate"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Ngày kết thúc"
+                        name="endDate"
+                        rules={[{ required: true, message: 'Vui lòng chọn ngày kết thúc' }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                 </Form>
-            </Drawer>
-
-            <Modal
-                title="Xác nhận xóa"
-                visible={isModalOpenDelete}
-                onOk={handleConfirmDelete}
-                onCancel={() => setIsModalOpenDelete(false)}
-            >
-                <p>Bạn có chắc chắn muốn xóa mã giảm giá này?</p>
             </Modal>
         </div>
     );

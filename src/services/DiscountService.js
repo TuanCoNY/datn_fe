@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { axiosJWT } from './UserService';  // Nếu bạn đã cấu hình axiosJWT trong UserService
+import { axiosJWT } from "./UserService"
+
+
 
 // Lấy tất cả mã giảm giá
 export const getAllDiscounts = async (access_token) => {
@@ -13,7 +14,7 @@ export const getAllDiscounts = async (access_token) => {
 
 // Tạo mã giảm giá mới
 export const createDiscount = async (access_token, discountData) => {
-    const res = await axiosJWT.post(`${process.env.REACT_APP_API_URL}/`, discountData, {
+    const res = await axiosJWT.post(`${process.env.REACT_APP_API_URL}/discount/promotions`, discountData, {
         headers: {
             token: `Bearer ${access_token}`,
         }
@@ -23,7 +24,7 @@ export const createDiscount = async (access_token, discountData) => {
 
 // Cập nhật mã giảm giá
 export const updateDiscount = async (access_token, discountData) => {
-    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}discount/${discountData.id}`, discountData, {
+    const res = await axiosJWT.put(`${process.env.REACT_APP_API_URL}/discount/promotions/${discountData.id}`, discountData, {
         headers: {
             token: `Bearer ${access_token}`,
         }
@@ -33,7 +34,7 @@ export const updateDiscount = async (access_token, discountData) => {
 
 // Xóa mã giảm giá
 export const deleteDiscount = async (access_token, discountId) => {
-    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/api/discount/${discountId}`, {
+    const res = await axiosJWT.delete(`${process.env.REACT_APP_API_URL}/discount/promotions/${discountId}`, {
         headers: {
             token: `Bearer ${access_token}`,
         }
