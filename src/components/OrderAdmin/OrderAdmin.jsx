@@ -1,52 +1,69 @@
-import React from 'react'
-import { WrapperHeader, WrapperUploadFile } from './style'
-import { Button, Form, Space } from 'antd'
-import TableComponent from '../TableComponent/TableComponent'
-import { SearchOutlined } from '@ant-design/icons'
-import InputComponent from '../InputComponent/InputComponent'
-import DrawerComponent from '../DrawerComponent/DrawerComponent'
-import Loading from '../LoadingComponent/Loading'
-import ModalComponent from '../ModalComponent/ModalComponent'
-import *as message from '../Message/Message'
-import { convertPrice, getBase64 } from '../../utils'
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import * as OrderService from '../../services/OrderService'
-import { useQuery } from '@tanstack/react-query'
-import { orderContant } from '../../contant'
-import PieChartComponent from './PieChart'
-
+import React, { useState } from 'react';
+import { WrapperHeader } from './style';
+import { Button, Form, message, Space } from 'antd';
+import TableComponent from '../TableComponent/TableComponent';
+import { SearchOutlined } from '@ant-design/icons';
+import InputComponent from '../InputComponent/InputComponent';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import * as OrderService from '../../services/OrderService';
+import { useQuery } from '@tanstack/react-query';
+import { orderContant } from '../../contant';
+import PieChartComponent from './PieChart';
+import { convertPrice } from '../../utils';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
 const OrderAdmin = () => {
-    const user = useSelector((state) => state?.user)
-
+    const user = useSelector((state) => state?.user);
     const [form] = Form.useForm();
+    const [selectedOrders, setSelectedOrders] = useState([]); // Trạng thái cho các đơn hàng được chọn
 
+    // Fetch orders using react-query
     const getAllOrder = async () => {
-        const res = await OrderService.getAllOrder(user?.access_token)
-        return res
-    }
+        const res = await OrderService.getAllOrder(user?.access_token);
+        return res;
+    };
 
     const queryOrder = useQuery({
         queryKey: ['orders'],
         queryFn: getAllOrder,
     });
-    const { isPending: isPendingOrders, data: orders } = queryOrder
+
+    const { isLoading: isPendingOrders, data: orders } = queryOrder;
+
+    const handleDeleteMany = async () => {
+        if (!selectedOrders.length) {
+            message.warning('Vui lòng chọn ít nhất một đơn hàng để xóa.');
+            return;
+        }
+
+        try {
+            const response = await OrderService.deleteManyOrders(selectedOrders, user?.access_token);
+            if (response.status === 'OK') {
+                message.success('Xóa các đơn hàng thành công!');
+                queryOrder.refetch(); // Làm mới danh sách đơn hàng
+                setSelectedOrders([]); // Xóa lựa chọn
+            } else {
+
+            }
+        } catch (error) {
+            message.error('Không thể xóa các đơn hàng.');
+            console.error('Error deleting orders:', error);
+            message.error('Đã xảy ra lỗi khi xóa các đơn hàng.');
+        }
+    };
 
     const getColumnSearchProps = (dataIndex) => ({
-        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
             <div
                 style={{
                     padding: 8,
                 }}
-                onKeyDown={(e) => e.stopPropagation()}
             >
                 <InputComponent
-                    //ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
                     value={selectedKeys[0]}
                     onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    //onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
                     style={{
                         marginBottom: 8,
                         display: 'block',
@@ -55,7 +72,7 @@ const OrderAdmin = () => {
                 <Space>
                     <Button
                         type="primary"
-                        //onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        onClick={() => confirm()}
                         icon={<SearchOutlined />}
                         size="small"
                         style={{
@@ -65,22 +82,13 @@ const OrderAdmin = () => {
                         Search
                     </Button>
                     <Button
-                        //onClick={() => clearFilters && handleReset(clearFilters)}
+                        onClick={() => clearFilters && clearFilters()}
                         size="small"
                         style={{
                             width: 90,
                         }}
                     >
                         Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            close();
-                        }}
-                    >
-                        close
                     </Button>
                 </Space>
             </div>
@@ -93,99 +101,100 @@ const OrderAdmin = () => {
             />
         ),
         onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownOpenChange: (visible) => {
-            if (visible) {
-                //setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
-        // render: (text) =>
-        //     searchedColumn === dataIndex ? (
-        //         // <Highlighter
-        //         //     highlightStyle={{
-        //         //         backgroundColor: '#ffc069',
-        //         //         padding: 0,
-        //         //     }}
-        //         //     searchWords={[searchText]}
-        //         //     autoEscape
-        //         //     textToHighlight={text ? text.toString() : ''}
-        //         // />
-        //     ) : (
-        //         text
-        //     ),
+            record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
     });
+
     const columns = [
         {
-            title: 'User Name',
+            title: 'Tên người dùng',
             dataIndex: 'userName',
-            sorter: (a, b) => a.userName.length - b.userName.length,
-            ...getColumnSearchProps('userName')
+            sorter: (a, b) => a.userName.localeCompare(b.userName),
+            ...getColumnSearchProps('userName'),
         },
         {
-            title: 'Phone',
+            title: 'Số điện thoại',
             dataIndex: 'phone',
-            sorter: (a, b) => a.phone.length - b.phone.length,
-            ...getColumnSearchProps('phone')
+            sorter: (a, b) => a.phone.localeCompare(b.phone),
+            ...getColumnSearchProps('phone'),
         },
         {
-            title: 'Address',
+            title: 'Địa chỉ',
             dataIndex: 'address',
-            sorter: (a, b) => a.address.length - b.address.length,
-            ...getColumnSearchProps('address')
+            sorter: (a, b) => a.address.localeCompare(b.address),
+            ...getColumnSearchProps('address'),
         },
         {
-            title: 'Price Item',
+            title: 'Giá',
             dataIndex: 'itemsPrice',
-            sorter: (a, b) => a.itemsPrice.length - b.itemsPrice.length,
-            ...getColumnSearchProps('itemsPrice')
+            sorter: (a, b) => a.itemsPrice - b.itemsPrice,
+            ...getColumnSearchProps('itemsPrice'),
         },
         {
             title: 'Shipping',
             dataIndex: 'shippingPrice',
-            sorter: (a, b) => a.shippingPrice.length - b.shippingPrice.length,
-            ...getColumnSearchProps('shippingPrice')
+            sorter: (a, b) => a.shippingPrice - b.shippingPrice,
+            ...getColumnSearchProps('shippingPrice'),
         },
         {
-            title: 'IsPaid',
+            title: 'Is Paid',
             dataIndex: 'isPaid',
-            sorter: (a, b) => a.isPaid.length - b.isPaid.length,
-            ...getColumnSearchProps('isPaid')
+            sorter: (a, b) => a.isPaid.localeCompare(b.isPaid),
+            ...getColumnSearchProps('isPaid'),
         },
         {
             title: 'Method',
             dataIndex: 'paymentMethod',
-            sorter: (a, b) => a.paymentMethod.length - b.paymentMethod.length,
-            ...getColumnSearchProps('paymentMethod')
+            sorter: (a, b) => a.paymentMethod.localeCompare(b.paymentMethod),
+            ...getColumnSearchProps('paymentMethod'),
         },
         {
             title: 'Total',
             dataIndex: 'totalPrice',
-            sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
-            ...getColumnSearchProps('totalPrice')
+            sorter: (a, b) => a.totalPrice - b.totalPrice,
+            ...getColumnSearchProps('totalPrice'),
+        },
+        {
+            title: 'Trạng thái đơn hàng',
+            dataIndex: 'orderStatus',
         },
     ];
-    const dataTable = orders?.data?.length && orders?.data?.map((order) => {
-        console.log('user', user)
-        return {
-            ...order, key: order._id, userName: order?.shippingAddress?.fullName, phone: order?.shippingAddress?.phone,
-            address: order?.shippingAddress?.address, paymentMethod: orderContant.payment[order?.paymentMethod],
-            isPaid: order?.isPaid ? 'TRUE' : 'FALSE', isDelivered: order?.isDelivered ? 'TRUE' : 'FALSE', totalPrice: convertPrice(order?.totalPrice),
-            itemsPrice: convertPrice(order?.itemsPrice)
-        }
-    })
+
+    const dataTable =
+        orders?.data?.map((order) => ({
+            key: order._id,
+            userName: order?.shippingAddress?.fullName || 'N/A',
+            phone: order?.shippingAddress?.phone || 'N/A',
+            address: order?.shippingAddress?.address || 'N/A',
+            paymentMethod: orderContant.payment[order?.paymentMethod] || 'Unknown',
+            isPaid: order?.isPaid ? 'TRUE' : 'FALSE',
+            shippingPrice: convertPrice(order?.shippingPrice || 0),
+            itemsPrice: convertPrice(order?.itemsPrice || 0),
+            totalPrice: convertPrice(order?.totalPrice || 0),
+            orderStatus: order?.orderStatus || 'Chưa giao',
+        })) || [];
 
     return (
         <div>
-            <WrapperHeader> Quản lý đơn hàng</WrapperHeader>
+            <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
             <div style={{ height: '170px', width: '170px' }}>
                 <PieChartComponent data={orders?.data} />
-
             </div>
-            <div style={{ marginTop: '20px' }}>
-                <TableComponent columns={columns} isPending={isPendingOrders} data={dataTable} />
-            </div>
+            <Space style={{ marginBottom: 16 }}>
+                <Button type="danger" onClick={handleDeleteMany}>
+                    Xóa các đơn hàng đã chọn
+                </Button>
+            </Space>
+            <TableComponent
+                columns={columns}
+                isPending={isPendingOrders}
+                data={dataTable}
+                rowSelection={{
+                    selectedRowKeys: selectedOrders,
+                    onChange: (selectedRowKeys) => setSelectedOrders(selectedRowKeys),
+                }}
+            />
         </div>
-    )
-}
+    );
+};
 
-export default OrderAdmin
+export default OrderAdmin;
